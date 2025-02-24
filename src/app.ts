@@ -11,7 +11,7 @@ app.use(cookieParser())
 app.use('/api', router)
 
 app.get('/', (req, res) => {
-  res.send('Hello World!')
+  res.send('News-Server!')
 })
 
 app.use(globalErrorHandler)

@@ -4,7 +4,7 @@ import { userService } from './user.service'
 import httpStatus from 'http-status'
 
 const createUser = catchAsync(async (req, res) => {
-  const result = await userService.createImageBitmap(req.file, req.body)
+  const result = await userService.createUserIntoDB(req.file, req.body)
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -12,7 +12,17 @@ const createUser = catchAsync(async (req, res) => {
     data: result,
   })
 })
+const createAdmin = catchAsync(async (req, res) => {
+  const result = await userService.createAdminIntoDB(req.file, req.body)
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Admin created successfully',
+    data: result,
+  })
+})
 
 export const UserController = {
-    createUser
+    createUser,
+    createAdmin,
 }

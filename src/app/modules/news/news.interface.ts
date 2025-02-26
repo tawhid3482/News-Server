@@ -8,4 +8,5 @@ export type TNews = {
     tags:string[],
     image?:string,
     views?:number,
+    isDeleted?:boolean
 }

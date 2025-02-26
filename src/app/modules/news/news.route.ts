@@ -16,4 +16,20 @@ router.post(
   validationRequest(newsValidation.newsValidationSchema),
   newsController.createNews,
 )
+
+router.put(
+  '/news/:id',
+  upload.single('file'),
+  (req: Request, res: Response, next: NextFunction) => {
+    req.body = JSON.parse(req.body.data)
+    next()
+  },
+  validationRequest(newsValidation.updateNewsValidationSchema),
+  newsController.updateNews,
+)
+
+router.delete('/news/:id', newsController.deleteNews)
+router.get('/news/:id', newsController.getSingleNews)
+router.get('/news', newsController.getNews)
+
 export const newsRoutes = router

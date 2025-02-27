@@ -49,6 +49,7 @@ const updateNews = catchAsync(async (req, res) => {
   })
 })
 
+
 const deleteNews = catchAsync(async (req, res) => {
   const { id } = req.params
   console.log(id)

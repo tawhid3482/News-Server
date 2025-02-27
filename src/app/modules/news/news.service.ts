@@ -18,7 +18,7 @@ const createNewsIntoDB = async (file: any, payload: TNews) => {
 }
 
 const getNewsFromDb = async () => {
- const result = await News.find({isDeleted:false}).populate('author')
+  const result = await News.find({ isDeleted: false }).populate('author')
   return result
 }
 
@@ -47,33 +47,42 @@ const deleteNewsFromDb = async (id: string) => {
 const updateNewsIntoDB = async (
   id: string,
   file: any,
-  payload: Partial<TNews>,
+  payload: Partial<TNews>
 ) => {
   const isNewsExists = await News.findById(id)
   if (!isNewsExists) {
     throw new AppError(httpStatus.BAD_REQUEST, 'News not found')
   }
+
   if (isNewsExists.isDeleted) {
     throw new AppError(httpStatus.BAD_REQUEST, 'News is already deleted')
   }
 
-  // Keep existing image if no new file is uploaded
-  let updatedFields: Partial<TNews> = { ...payload }
-
-  if (file) {
-    const imageName = `${payload.content || isNewsExists.content}${payload.category || isNewsExists.category}`
-    const path = file.path
-    const photo = await sendImageToCloudinary(imageName, path)
-    console.log(photo)
-    updatedFields.image = photo // Update image only if a new file is uploaded
+  // Prepare the updated data (make sure to merge existing data with payload)
+  const updatedData: Partial<TNews> = {
+    ...isNewsExists.toObject(), // Convert the document to a plain object
+    ...payload,  // Merge the provided payload
   }
 
-  // Update only provided fields
-  const result = await News.findByIdAndUpdate(id, updatedFields, { new: true })
-  return result
+  // If an image file is provided, upload it to Cloudinary and get the URL
+  if (file) {
+    const imageName = `${payload.tags || payload.category}`
+    const path = file.path
+    const photo = await sendImageToCloudinary(imageName, path)
+
+    updatedData.image = photo // Add image URL to the updated data
+  }
+  const updatedNews = await News.findByIdAndUpdate(id, updatedData, {
+    new: true,  // Return the updated document
+    runValidators: true,  // Run validation on update
+  })
+
+  if (!updatedNews) {
+    throw new Error('News update failed')
+  }
+
+  return updatedNews
 }
-
-
 
 export const newsService = {
   createNewsIntoDB,

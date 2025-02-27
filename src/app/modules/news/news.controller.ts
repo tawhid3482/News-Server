@@ -49,7 +49,6 @@ const updateNews = catchAsync(async (req, res) => {
   })
 })
 
-
 const deleteNews = catchAsync(async (req, res) => {
   const { id } = req.params
   console.log(id)
@@ -59,7 +58,7 @@ const deleteNews = catchAsync(async (req, res) => {
     statusCode: httpStatus.OK,
     success: true,
     message: 'News deleted Successfully',
-    data: result,
+    data: null,
   })
 })
 

@@ -10,8 +10,6 @@ const commentValidationSchema = z.object({
 })
 const updateCommentValidationSchema = z.object({
   body: z.object({
-    newsId: z.string(),
-    userId: z.string(),
     comment: z.string().optional(),
     isDeleted: z.boolean().optional(),
   }),

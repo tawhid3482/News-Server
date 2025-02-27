@@ -24,8 +24,11 @@ const getNewsFromDb = async () => {
 
 const getSingleNewsFromDb = async (id: string) => {
   const isNewsExists = await News.findById(id)
-  if (isNewsExists) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'News is already deleted')
+  if (!isNewsExists) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'News not found!')
+  }
+  if (isNewsExists.isDeleted === true) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'News is already deleted!')
   }
   const result = await News.findById(id).populate('author')
   return result

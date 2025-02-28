@@ -10,7 +10,7 @@ export interface TUser {
   passwordChangeAt?: Date
   gender: 'male' | 'female' | 'other'
   photo?: string
-  role: 'super-admin' | 'admin' | 'user'
+  role: 'superAdmin' | 'admin' | 'user'
   lastSignInTime?: Date
   status: 'in-progress' | 'blocked'
   isDeleted: boolean

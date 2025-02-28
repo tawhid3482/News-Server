@@ -5,7 +5,7 @@ import { UserStatus } from './user.constant'
 import bcrypt from 'bcrypt'
 import config from '../../config'
 
-const userSchema = new Schema<TUser,UserModel>(
+const userSchema = new Schema<TUser, UserModel>(
   {
     id: { type: String, unique: true, required: false },
     name: { type: String, required: true },
@@ -24,7 +24,7 @@ const userSchema = new Schema<TUser,UserModel>(
     role: {
       type: String,
       enum: {
-        values: ['admin', 'user', 'super-admin'],
+        values: ['admin', 'user', 'supeAdmin'],
         message: '{VALUE} is not correct role',
       },
     },
@@ -68,4 +68,13 @@ userSchema.statics.isPasswordMatched = async function (
   return await bcrypt.compare(plainTextPassword, hashedPassword)
 }
 
-export const User = model<TUser,UserModel>('user', userSchema)
+userSchema.statics.isJWTIssuedBeforePasswordChanged = function (
+  passwordChangedTimestamp: Date,
+  jwtIssuedTimestamp: number,
+) {
+  const passwordChangedTime =
+    new Date(passwordChangedTimestamp).getTime() / 1000
+  return passwordChangedTime > jwtIssuedTimestamp
+}
+
+export const User = model<TUser, UserModel>('user', userSchema)

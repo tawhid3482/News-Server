@@ -1,4 +1,5 @@
 import { Model } from 'mongoose'
+import { User_Role } from './user.constant'
 
 export interface TUser {
   id?: string
@@ -20,5 +21,11 @@ export interface UserModel extends Model<TUser> {
   isPasswordMatched(
     plainTextPassword: string,
     hashedPassword: string,
-  ): Promise<boolean>;
+  ): Promise<boolean>
+  isJWTIssuedBeforePasswordChanged(
+    passwordChangedTimestamp: Date,
+    jwtIssuedTimestamp: number,
+  ): boolean
 }
+
+export type TUserRole = keyof typeof User_Role

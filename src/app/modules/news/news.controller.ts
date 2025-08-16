@@ -4,7 +4,7 @@ import { newsService } from './news.service'
 import httpStatus from 'http-status'
 
 const createNews = catchAsync(async (req, res) => {
-  const result = await newsService.createNewsIntoDB(req.file, req.body)
+  const result = await newsService.createNewsIntoDB( req.body)
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

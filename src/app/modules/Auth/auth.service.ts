@@ -6,7 +6,6 @@ import httpStatus from 'http-status'
 import { createToken, verifyToken } from './auth.utils'
 import bcrypt from 'bcrypt'
 import { JwtPayload } from 'jsonwebtoken'
-import { number } from 'zod'
 import { sendEmail } from '../../utils/sendEmail'
 
 const userLoginFrom = async (payload: TLogin) => {
@@ -14,12 +13,12 @@ const userLoginFrom = async (payload: TLogin) => {
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !')
   }
-  const isDeleted = user?.isDeleted
+  const isDeleted = user?.status === 'DELETED'
   if (isDeleted) {
     throw new AppError(httpStatus.FORBIDDEN, 'This user is deleted !')
   }
   const userStatus = user?.status
-  if (userStatus === 'blocked') {
+  if (userStatus === 'BLOCKED') {
     throw new AppError(httpStatus.FORBIDDEN, 'This user is blocked ! !')
   }
 
@@ -45,7 +44,7 @@ const userLoginFrom = async (payload: TLogin) => {
   return {
     accessToken,
     refreshToken,
-    needsPasswordChange: user?.needsPasswordChange,
+    needsPasswordChange: user?.needPasswordChange,
   }
 }
 

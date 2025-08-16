@@ -4,17 +4,29 @@ import { TNews } from './news.interface'
 const newsSchema = new Schema<TNews>(
   {
     title: { type: String, required: true },
+    slug: { type: String, required: true, unique: true },
+    summary: String,
     content: { type: String, required: true },
-    category: { type: String, required: true },
-    author: { type: Schema.Types.ObjectId, ref: 'user', required: false },
-    tags: { type: [String], default: [] },
-    image: { type: String, required: false },
-    views: { type: Number, required: false, default: 0 },
-    isDeleted: { type: Boolean, required: false, default: false },
+    category: { type: Schema.Types.ObjectId, ref: "category", required: true },
+    author: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    tags: [{ type: String }],
+    coverImage: String,
+    isDeleted: { type: Boolean, default: false },
+    isPublished: { type: Boolean, default: false },
+    publishedAt: Date,
+    status: {
+      type: String,
+      enum: ["DRAFT", "PUBLISHED", "ARCHIVED"],
+      default: "DRAFT",
+    },
+    reactions: [{ type: Schema.Types.ObjectId, ref: "Reaction" }],
+    comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
+    viewsCount: { type: Number, default: 0 },
+    views: [{ type: Schema.Types.ObjectId, ref: "PostView" }],
+    readingTime: { type: Number, default: 0 },
   },
-  {
-    timestamps: true,
-  },
-)
+  { timestamps: true } // createdAt, updatedAt auto
+);
+
 
 export const News = model<TNews>('news', newsSchema)

@@ -1,20 +1,21 @@
-import { Model } from 'mongoose'
-import { User_Role } from './user.constant'
+import { Model, Types } from 'mongoose'
+import { Gender, UserRole, UserStatus } from '../../interface/enum';
+import { User_Role } from './user.constant';
 
-export interface TUser {
-  id?: string
-  name: string
-  email: string
-  password: string
-  needsPasswordChange: boolean
-  passwordChangeAt?: Date
-  gender: 'male' | 'female' | 'other'
-  photo?: string
-  role: 'superAdmin' | 'admin' | 'user'
-  lastSignInTime?: Date
-  status: 'in-progress' | 'blocked'
-  isDeleted: boolean
-}
+// User
+export type TUser = {
+  email: string;
+  password: string;
+  name: string;
+  profilePhoto?: string;
+  role: UserRole;
+  status?: UserStatus;
+  gender: Gender;
+  needPasswordChange?: boolean;
+  admin?: Types.ObjectId;
+  author?: Types.ObjectId;
+  editor?: Types.ObjectId;
+};
 
 export interface UserModel extends Model<TUser> {
   isUserExistsByEmail(email: string): Promise<TUser>

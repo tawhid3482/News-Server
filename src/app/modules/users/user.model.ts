@@ -1,80 +1,88 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
-import { model, Schema } from 'mongoose'
-import { TUser, UserModel } from './user.interface'
-import { UserStatus } from './user.constant'
-import bcrypt from 'bcrypt'
-import config from '../../config'
+import { model, Schema } from "mongoose";
+import { TUser, UserModel } from "./user.interface";
+import { UserStatus } from "./user.constant";
+import bcrypt from "bcrypt";
+import config from "../../config";
 
 const userSchema = new Schema<TUser, UserModel>(
   {
-    id: { type: String, unique: true, required: false },
-    name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true, select: 0 },
-    needsPasswordChange: { type: Boolean, default: false },
-    passwordChangeAt: { type: Date },
-    gender: {
-      type: String,
-      enum: {
-        values: ['male', 'female', 'other'],
-        message: '{VALUE} is not correct gender',
-      },
-    },
-    photo: { type: String, required: false },
+    name: { type: String, required: true, trim: true },
+    email: { type: String, required: true, unique: true, lowercase: true },
+    password: { type: String, required: true, select: false },
+    needPasswordChange: { type: Boolean, default: false },
+    profilePhoto: { type: String },
     role: {
       type: String,
-      enum: {
-        values: ['admin', 'user', 'supeAdmin'],
-        message: '{VALUE} is not correct role',
-      },
+      enum: ["USER","ADMIN","SUPER_ADMIN","AUTHOR","EDITOR"],
+      required: true,
+      default: "USER",
     },
-    lastSignInTime: { type: String, required: false },
     status: {
       type: String,
-      enum: {
-        values: UserStatus,
-        message: '{VALUE} is not correct status',
-      },
-      default: 'in-progress',
+      enum: Object.values(UserStatus),
+      default: "ACTIVE",
     },
-    isDeleted: { type: Boolean, default: false },
+    gender: {
+      type: String,
+      enum: ["MALE", "FEMALE", "OTHER"],
+      required: true,
+    },
+    admin: { type: Schema.Types.ObjectId, ref: "Admin" },
+    author: { type: Schema.Types.ObjectId, ref: "Author" },
+    editor: { type: Schema.Types.ObjectId, ref: "Editor" },
   },
   {
     timestamps: true,
-  },
-)
+    versionKey: false,
+  }
+);
 
-userSchema.pre('save', async function (next) {
-  const user = this
-  user.password = await bcrypt.hash(
-    user.password,
-    Number(config.bcrypt_salt_rounds),
-  )
-  next()
-})
+// ======================
+// Pre-save hook → hash password
+// ======================
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+  this.password = await bcrypt.hash(
+    this.password,
+    Number(config.bcrypt_salt_rounds)
+  );
+  next();
+});
 
-userSchema.post('save', function (doc, next) {
-  doc.password = ''
-  next()
-})
+// ======================
+// Post-save hook → hide password in response
+// ======================
+userSchema.post("save", function (doc, next) {
+  doc.password = "";
+  next();
+});
 
+// ======================
+// Static methods
+// ======================
 userSchema.statics.isUserExistsByEmail = async function (email: string) {
-  return await User.findOne({ email }).select('+password')
-}
+  return await this.findOne({ email }).select("+password");
+};
+
 userSchema.statics.isPasswordMatched = async function (
-  plainTextPassword,
-  hashedPassword,
+  plainTextPassword: string,
+  hashedPassword: string
 ) {
-  return await bcrypt.compare(plainTextPassword, hashedPassword)
-}
+  return await bcrypt.compare(plainTextPassword, hashedPassword);
+};
 
 userSchema.statics.isJWTIssuedBeforePasswordChanged = function (
   passwordChangedTimestamp: Date,
-  jwtIssuedTimestamp: number,
+  jwtIssuedTimestamp: number
 ) {
+  if (!passwordChangedTimestamp) return false;
   const passwordChangedTime =
-    new Date(passwordChangedTimestamp).getTime() / 1000
-  return passwordChangedTime > jwtIssuedTimestamp
-}
+    new Date(passwordChangedTimestamp).getTime() / 1000;
+  return passwordChangedTime > jwtIssuedTimestamp;
+};
 
-export const User = model<TUser, UserModel>('user', userSchema)
+// ======================
+// Model export
+// ======================
+export const User = model<TUser, UserModel>("User", userSchema);

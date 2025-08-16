@@ -4,7 +4,7 @@ import { TCategory } from './category.interface'
 const categorySchema = new Schema<TCategory>(
   {
     name: { type: String, required: true },
-    description: { type: String, required: true },
+    slug: { type: String, required: true },
   },
   {
     timestamps: true,

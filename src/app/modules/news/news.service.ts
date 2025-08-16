@@ -1,26 +1,121 @@
+import { FilterQuery } from 'mongoose'
 import AppError from '../../error/AppError'
+import { IPaginationOptions, IPostFilterRequest } from '../../interface/enum'
 import { sendImageToCloudinary } from '../../utils/sendImageToCloudinary'
 import { TNews } from './news.interface'
 import { News } from './news.model'
 import httpStatus from 'http-status'
 
-const createNewsIntoDB = async (file: any, payload: TNews) => {
-  const imageName = `${payload.content}${payload.category}`
-  const path = file?.path
-  const photo = await sendImageToCloudinary(imageName, path)
+const createNewsIntoDB = async ( payload: TNews) => {
   const newsData: Partial<TNews> = {
     ...payload,
     author: payload.author,
-    image: photo,
   }
   const result = await News.create(newsData)
   return result
 }
 
-const getNewsFromDb = async () => {
-  const result = await News.find({ isDeleted: false }).populate('author')
-  return result
-}
+const getNewsFromDb = async (
+  filters: IPostFilterRequest = {},
+  options: IPaginationOptions = {}
+) => {
+  const {
+    page = 1,
+    limit = 10,
+    sortBy = "createdAt",
+    sortOrder = "desc",
+  } = options || {};
+
+  const skip = (page - 1) * limit;
+
+  const { searchTerm, fromDate, toDate, tags, ...filterData } = filters || {};
+
+  const andConditions: FilterQuery<any>[] = [];
+
+  // 🔎 Search
+  if (searchTerm) {
+    andConditions.push({
+      $or: [
+        { title: { $regex: searchTerm, $options: "i" } },
+        { slug: { $regex: searchTerm, $options: "i" } },
+        { summary: { $regex: searchTerm, $options: "i" } },
+        { "category.slug": { $regex: searchTerm, $options: "i" } },
+        { tags: { $in: [searchTerm] } },
+      ],
+    });
+  }
+
+  // 🎯 Filter by fields
+  Object.keys(filterData).forEach((key) => {
+    const value = (filterData as any)[key];
+    if (!value) return;
+
+    if (key === "title" || key === "slug") {
+      andConditions.push({ [key]: { $regex: value, $options: "i" } });
+    }
+
+    if (key === "category") {
+      andConditions.push({ "category.name": value });
+    }
+
+    if (key === "isPublished") {
+      andConditions.push({ isPublished: value === "true" });
+    }
+
+    if (key === "categoryId") {
+      andConditions.push({ category: value });
+    }
+
+    if (key === "authorId") {
+      andConditions.push({ author: value });
+    }
+
+    if (key === "status") {
+      andConditions.push({ status: value });
+    }
+  });
+
+  // 📅 Date Range
+  if (fromDate || toDate) {
+    andConditions.push({
+      createdAt: {
+        ...(fromDate && { $gte: new Date(fromDate) }),
+        ...(toDate && { $lte: new Date(toDate) }),
+      },
+    });
+  }
+
+  const whereConditions =
+    andConditions.length > 0 ? { $and: andConditions } : {};
+
+  // 🔥 Query + Populate
+  const result = await News.find({
+    ...whereConditions,
+    isDeleted: false,
+    isPublished: true,
+    status: "PUBLISHED",
+  })
+    .populate("category")
+    .populate("author")
+    .skip(skip)
+    .limit(limit)
+    .sort({ [sortBy]: sortOrder === "asc" ? 1 : -1 });
+
+  const total = await News.countDocuments({
+    ...whereConditions,
+    isDeleted: false,
+  });
+
+  return {
+    meta: {
+      total,
+      page,
+      limit,
+    },
+    data: result,
+  };
+};
+
 
 const getSingleNewsFromDb = async (id: string) => {
   const isNewsExists = await News.findById(id)
@@ -73,7 +168,7 @@ const updateNewsIntoDB = async (
     const path = file.path
     const photo = await sendImageToCloudinary(imageName, path)
 
-    updatedData.image = photo // Add image URL to the updated data
+    updatedData.coverImage = photo // Add image URL to the updated data
   }
   const updatedNews = await News.findByIdAndUpdate(id, updatedData, {
     new: true,  // Return the updated document

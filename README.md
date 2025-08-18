@@ -26,60 +26,9 @@ Now, this project should be running successfully! 🚀
 
 
 
-// Admin
-export type TAdmin = {
-  _id?: Types.ObjectId;
-  email: string;
-  name: string;
-  profilePhoto?: string;
-  contactNumber?: string;
-  address?: string;
-  bio?: string;
-  isActive?: boolean;
-  isVerified?: boolean;
-  socialLinks?: Record<string, any>;
-  isDeleted?: boolean;
-  createdAt?: Date;
-  updatedAt?: Date;
-  user: Types.ObjectId;
-};
 
-// Author
-export type TAuthor = {
-  _id?: Types.ObjectId;
-  email: string;
-  name: string;
-  profilePhoto: string;
-  contactNumber: string;
-  address?: string;
-  bio?: string;
-  socialLinks?: Record<string, any>;
-  isVerified?: boolean;
-  totalPosts?: number;
-  totalReacts?: number;
-  isActive?: boolean;
-  createdAt?: Date;
-  updatedAt?: Date;
-  user: Types.ObjectId;
-};
 
-// Editor
-export type TEditor = {
-  _id?: Types.ObjectId;
-  email: string;
-  name: string;
-  profilePhoto: string;
-  contactNumber: string;
-  address?: string;
-  bio?: string;
-  role?: EditorRole;
-  isActive?: boolean;
-  isVerified?: boolean;
-  socialLinks?: Record<string, any>;
-  createdAt?: Date;
-  updatedAt?: Date;
-  user: Types.ObjectId;
-};
+
 
 // Post
 export type TPost = {

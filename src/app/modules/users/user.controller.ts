@@ -22,7 +22,20 @@ const createAdmin = catchAsync(async (req, res) => {
   })
 })
 
+const getMe = catchAsync(async (req, res) => {
+  const { userId } = req.user;
+  const result = await userService.getMe(userId);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Profile data fetched!",
+    data: result,
+  });
+});
+
+
 export const UserController = {
     createUser,
     createAdmin,
+    getMe
 }

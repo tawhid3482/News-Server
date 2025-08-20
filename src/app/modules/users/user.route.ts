@@ -2,6 +2,7 @@ import express, { NextFunction, Request, Response } from 'express'
 import validationRequest from '../../middlewares/validationRequest'
 import { userValidation } from './user.validation'
 import { UserController } from './user.controller'
+import auth from '../../middlewares/auth'
 
 const router = express.Router()
 
@@ -17,10 +18,8 @@ router.post(
   UserController.createAdmin,
 )
 
-router.get(
-  "/me",
-  UserController.getMe
-);
-
+router.get('/me',
+  auth("USER","ADMIN"),
+  UserController.getMe)
 
 export const UserRoutes = router

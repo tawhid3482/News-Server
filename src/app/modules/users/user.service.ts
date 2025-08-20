@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { sendImageToCloudinary } from '../../utils/sendImageToCloudinary'
 import { Admin } from '../admin/admin.model'
+import { Author } from '../author/author.model'
+import { Editor } from '../editor/editor.model'
 import { TUser } from './user.interface'
 import { User } from './user.model'
 import { generateAdminId } from './user.utils'
@@ -27,10 +29,10 @@ const createAdminIntoDB = async (file: any, payload: TUser) => {
   return result
 }
 
-const getMe = async (userId: string) => {
+const getMe = async (userEmail: string) => {
   // User খুঁজে বের করা
   const userData = await User.findOne(
-    { _id: userId, status: UserStatus.ACTIVE }, // where condition
+    { email: userEmail, status: UserStatus.ACTIVE }, // where condition
     {
       email: 1,
       role: 1,
@@ -59,7 +61,7 @@ const getMe = async (userId: string) => {
   }
 
   // userData + profileData merge করা
-  return { ...profileData, ...userData };
+return { ...userData, ...(profileData || {}) };
 };
 
 export const userService = {

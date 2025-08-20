@@ -53,19 +53,6 @@ export type TPost = {
   updatedAt?: Date;
 };
 
-// Opinion
-export type TOpinion = {
-  _id?: Types.ObjectId;
-  title: string;
-  slug: string;
-  content: string;
-  author: Types.ObjectId;
-  category: Types.ObjectId;
-  tags?: Types.ObjectId[];
-  isPublished?: boolean;
-  createdAt?: Date;
-  updatedAt?: Date;
-};
 
 // VideoNews
 export type TVideoNews = {

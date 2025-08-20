@@ -29,7 +29,7 @@ const auth = (...requiredRoles: TUserRole[]) => {
     }
     // checking if the user is already deleted
 
-    const isDeleted = user?.isDeleted
+    const isDeleted = user?.status === "DELETED";
 
     if (isDeleted) {
       throw new AppError(httpStatus.FORBIDDEN, 'This user is deleted !')
@@ -38,19 +38,19 @@ const auth = (...requiredRoles: TUserRole[]) => {
     // checking if the user is blocked
     const userStatus = user?.status
 
-    if (userStatus === 'blocked') {
+    if (userStatus === 'BLOCKED') {
       throw new AppError(httpStatus.FORBIDDEN, 'This user is blocked ! !')
     }
 
-    if (
-      user.passwordChangeAt &&
-      User.isJWTIssuedBeforePasswordChanged(
-        user.passwordChangeAt,
-        iat as number,
-      )
-    ) {
-      throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized !')
-    }
+    // if (
+    //   user.needPasswordChange &&
+    //   User.isJWTIssuedBeforePasswordChanged(
+    //     user.needPasswordChange,
+    //     iat as number,
+    //   )
+    // ) {
+    //   throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized !')
+    // }
 
     if (requiredRoles && !requiredRoles.includes(role)) {
       throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized  hi!')

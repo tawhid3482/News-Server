@@ -19,7 +19,7 @@ router.get(
 // ✅ Create (Author / Editor)
 router.post(
   "/create-opinion",
-  auth(User_Role.AUTHOR, User_Role.EDITOR),
+  auth(User_Role.ADMIN, User_Role.AUTHOR, User_Role.EDITOR, User_Role.SUPER_ADMIN),
   validationRequest(OpinionValidation.createOpinion),
   OpinionController.createOpinion
 );

@@ -8,8 +8,8 @@ import pick from "../../utils/pick";
 
 
 const createOpinion = catchAsync(async (req: Request, res: Response) => {
-  const { userId } = req.user;
-  const result = await OpinionService.createOpinionIntoDB(req, userId);
+  const { userEmail } = req.user;
+  const result = await OpinionService.createOpinionIntoDB(req, userEmail);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,

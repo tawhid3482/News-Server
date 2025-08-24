@@ -6,8 +6,9 @@ import { IPaginationOptions } from "../../interface/enum";
 import AppError from "../../error/AppError";
 import { IGenericResponse } from "../../interface/common";
 import { paginationHelpers } from "../../utils/paginationHelper";
+import { User } from "../users/user.model";
 
-const createOpinionIntoDB = async (req: Request, userId: string) => {
+const createOpinionIntoDB = async (req: Request, userEmail: string) => {
   const { title, slug, content, categoryId, tags = [] } = req.body;
 
   const parsedTags =
@@ -17,19 +18,19 @@ const createOpinionIntoDB = async (req: Request, userId: string) => {
       ? tags
       : [];
 
+      const findUserID = await User.findOne({ email: userEmail });
+
   const opinion = await Opinion.create({
     title,
     slug,
     content,
-    author: new Types.ObjectId(userId),
+    author: new Types.ObjectId(findUserID?._id),
     category: new Types.ObjectId(categoryId),
     tags: parsedTags.map((t) => new Types.ObjectId(t)), // assume tag ids are sent
   });
 
   return opinion.populate([
     { path: "author", select: "name email profilePhoto" },
-    { path: "category" },
-    { path: "tags" },
   ]);
 };
 
@@ -75,7 +76,7 @@ const getAllOpinionFromDB = async (
     .limit(limit)
     .populate("author", "name email profilePhoto")
     .populate("category")
-    .populate("tags");
+    // .populate("tags");
 
   const total = await Opinion.countDocuments(query);
 

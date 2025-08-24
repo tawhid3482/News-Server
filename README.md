@@ -76,14 +76,6 @@ export type TCategory = {
   slug: string;
 };
 
-// Tag
-export type TTag = {
-  _id?: Types.ObjectId;
-  name: string;
-  posts?: Types.ObjectId[];
-  opinions?: Types.ObjectId[];
-  videoNews?: Types.ObjectId[];
-};
 
 // Reaction
 export type TReaction = {

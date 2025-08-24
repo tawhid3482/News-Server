@@ -6,6 +6,8 @@ import { subscribeRoutes } from '../modules/subscription/subscription.route'
 import { AuthRoutes } from '../modules/Auth/auth.route'
 import { categoryRoutes } from '../modules/category/category.route'
 import { reactionRoutes } from '../modules/reaction/reaction.route'
+import { OpinionRoutes } from '../modules/opinion/opinion.route'
+import { ReviewRoutes } from '../modules/reviews/reviews.route'
 
 const router = Router()
 
@@ -37,6 +39,14 @@ const moduleRoutes = [
   {
     path: '/',
     route: reactionRoutes,
+  },
+  {
+    path: '/opinion',
+    route: OpinionRoutes,
+  },
+  {
+    path: '/review',
+    route: ReviewRoutes,
   },
 ]
 

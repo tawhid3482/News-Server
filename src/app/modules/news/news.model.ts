@@ -7,7 +7,7 @@ const newsSchema = new Schema<TNews>(
     slug: { type: String, required: true, unique: true },
     summary: String,
     content: { type: String, required: true },
-    category: { type: Schema.Types.ObjectId, ref: "category", required: true },
+    category: { type: Schema.Types.ObjectId, ref: "Category", required: true },
     author: { type: Schema.Types.ObjectId, ref: "User", required: true },
     tags: [{ type: String }],
     coverImage: String,

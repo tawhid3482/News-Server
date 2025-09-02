@@ -77,14 +77,7 @@ export type TCategory = {
 };
 
 
-// Reaction
-export type TReaction = {
-  _id?: Types.ObjectId;
-  type: ReactionType;
-  user: Types.ObjectId;
-  post: Types.ObjectId;
-  createdAt?: Date;
-};
+
 
 // Comment
 export type TComment = {

@@ -1,7 +1,9 @@
 import { Types } from 'mongoose'
+import { ReactionType } from '../../interface/enum';
 
+// Reaction
 export type TReaction = {
-  newsId: Types.ObjectId
-  userId: Types.ObjectId
-  reaction:  'like' | 'love' | 'care' | 'funny' | 'wow' | 'sad' | 'angry';
-}
+  type: ReactionType;
+  userId: Types.ObjectId;
+  postId: Types.ObjectId;
+};

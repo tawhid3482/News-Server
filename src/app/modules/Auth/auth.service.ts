@@ -59,13 +59,13 @@ const changePassword = async (
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !')
   }
-  const isDeleted = user?.isDeleted
+  const isDeleted = user?.status === 'DELETED'
   if (isDeleted) {
     throw new AppError(httpStatus.FORBIDDEN, 'This user is deleted !')
   }
   // checking if the user is blocked
   const userStatus = user?.status
-  if (userStatus === 'blocked') {
+  if (userStatus === 'BLOCKED') {
     throw new AppError(httpStatus.FORBIDDEN, 'This user is blocked ! !')
   }
   //checking if the password is correct
@@ -97,7 +97,7 @@ const refreshToken = async (token: string) => {
     throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !')
   }
   // checking if the user is already deleted
-  const isDeleted = user?.isDeleted
+  const isDeleted = user?.status === 'DELETED'
 
   if (isDeleted) {
     throw new AppError(httpStatus.FORBIDDEN, 'This user is deleted !')
@@ -106,16 +106,16 @@ const refreshToken = async (token: string) => {
   // checking if the user is blocked
   const userStatus = user?.status
 
-  if (userStatus === 'blocked') {
+  if (userStatus === 'BLOCKED') {
     throw new AppError(httpStatus.FORBIDDEN, 'This user is blocked ! !')
   }
 
-  if (
-    user.passwordChangeAt &&
-    User.isJWTIssuedBeforePasswordChanged(user.passwordChangeAt, iat as number)
-  ) {
-    throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized !')
-  }
+  // if (
+  //   user.passwordChangeA &&
+  //   User.isJWTIssuedBeforePasswordChanged(user.passwordChangeAt, iat as number)
+  // ) {
+  //   throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized !')
+  // }
 
   const jwtPayload = {
     userEmail: user.email,
@@ -141,13 +141,13 @@ const forgetPassword = async (userEmail: string) => {
     throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !')
   }
   // checking if the user is already deleted
-  const isDeleted = user?.isDeleted
+  const isDeleted = user?.status === 'DELETED'
   if (isDeleted) {
     throw new AppError(httpStatus.FORBIDDEN, 'This user is deleted !')
   }
   // checking if the user is blocked
   const userStatus = user?.status
-  if (userStatus === 'blocked') {
+  if (userStatus === 'BLOCKED') {
     throw new AppError(httpStatus.FORBIDDEN, 'This user is blocked ! !')
   }
   const jwtPayload = {
@@ -160,8 +160,9 @@ const forgetPassword = async (userEmail: string) => {
     config.jwt_access_secret as string,
     '10m',
   )
+const userId = await User.findOne({ email: user.email }).select('_id')
 
-  const resetUILink = `${config.reset_pass_ui_link}?id=${user.id}&token=${resetToken} `
+  const resetUILink = `${config.reset_pass_ui_link}?id=${userId}&token=${resetToken} `
 
   sendEmail(user.email, resetUILink)
 
@@ -179,14 +180,14 @@ const resetPassword = async (
     throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !')
   }
   // checking if the user is already deleted
-  const isDeleted = user?.isDeleted
+  const isDeleted = user?.status === 'DELETED'
 
   if (isDeleted) {
     throw new AppError(httpStatus.FORBIDDEN, 'This user is deleted !')
   }
   // checking if the user is blocked
   const userStatus = user?.status
-  if (userStatus === 'blocked') {
+  if (userStatus === 'BLOCKED') {
     throw new AppError(httpStatus.FORBIDDEN, 'This user is blocked ! !')
   }
   const decoded = verifyToken(

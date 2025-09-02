@@ -4,7 +4,8 @@ import { reactionService } from './reaction.service'
 import httpStatus from 'http-status'
 
 const createReaction = catchAsync(async (req, res) => {
-  const result = await reactionService.createReactionIntoDB(req.body)
+  const {userEmail}= req.user
+  const result = await reactionService.createReactionIntoDB(req.body, userEmail)
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -12,8 +13,8 @@ const createReaction = catchAsync(async (req, res) => {
     data: result,
   })
 })
-const getReactionsByNewsId = catchAsync(async (req, res) => {
-  const result = await reactionService.getReactionsByNewsIdFromDB(req.params.newsId)
+const getReactionsByPostId = catchAsync(async (req, res) => {
+  const result = await reactionService.getReactionsByPostIdFromDB(req.params.postId)
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -23,7 +24,8 @@ const getReactionsByNewsId = catchAsync(async (req, res) => {
 })
 const deleteReaction = catchAsync(async (req, res) => {
   const { id } = req.params
-  const result = await reactionService.deleteReactionFromDb(id)
+  const { userEmail } = req.user
+  const result = await reactionService.deleteReactionFromDb(userEmail, id)
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -34,6 +36,6 @@ const deleteReaction = catchAsync(async (req, res) => {
 
 export const reactionController = {
   createReaction,
-  getReactionsByNewsId,
+  getReactionsByPostId,
   deleteReaction,
 }

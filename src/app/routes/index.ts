@@ -5,7 +5,7 @@ import { commentRoutes } from '../modules/comment/comment.route'
 import { subscribeRoutes } from '../modules/subscription/subscription.route'
 import { AuthRoutes } from '../modules/Auth/auth.route'
 import { categoryRoutes } from '../modules/category/category.route'
-import { reactionRoutes } from '../modules/reaction/reaction.route'
+import { ReactionRoutes } from '../modules/reaction/reaction.route'
 import { OpinionRoutes } from '../modules/opinion/opinion.route'
 import { ReviewRoutes } from '../modules/reviews/reviews.route'
 
@@ -37,8 +37,8 @@ const moduleRoutes = [
     route: categoryRoutes,
   },
   {
-    path: '/',
-    route: reactionRoutes,
+    path: '/reaction',
+    route: ReactionRoutes,
   },
   {
     path: '/opinion',

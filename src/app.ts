@@ -8,7 +8,7 @@ const app: Application = express()
 
 app.use(
   cors({
-    origin: ["http://localhost:5000", "http://localhost:3000"],
+    origin: ["https://tis-news.vercel.app","http://localhost:5000", "http://localhost:3000"],
     credentials: true,
   })
 );

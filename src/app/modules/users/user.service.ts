@@ -5,7 +5,6 @@ import { Author } from '../author/author.model'
 import { Editor } from '../editor/editor.model'
 import { TUser } from './user.interface'
 import { User } from './user.model'
-import { generateAdminId } from './user.utils'
 import { UserRole, UserStatus } from './user.validation'
 
 const createUserIntoDB = async (payload: TUser) => {

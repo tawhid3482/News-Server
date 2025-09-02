@@ -3,14 +3,13 @@ import { TReaction } from './reaction.interface'
 
 const reactionSchema = new Schema<TReaction>(
   {
-    newsId: { type: Schema.Types.ObjectId, ref: 'news', required: true },
-    userId: { type: Schema.Types.ObjectId, ref: 'user', required: true },
-    reaction: {
+    type: {
       type: String,
-      enum: {
-        values: ['like', 'love', 'care', 'funny', 'wow', 'sad', 'angry']
-      },
+      required: true,
+      enum: ['LIKE', 'LOVE', 'CARE', 'FUNNY', 'WOW', 'SAD', 'ANGRY'],
     },
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    postId: { type: Schema.Types.ObjectId, ref: 'News', required: true },
   },
   {
     timestamps: true,
@@ -18,6 +17,3 @@ const reactionSchema = new Schema<TReaction>(
 )
 
 export const Reaction = model<TReaction>('reaction', reactionSchema)
-
-
-

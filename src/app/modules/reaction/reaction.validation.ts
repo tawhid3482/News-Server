@@ -2,20 +2,20 @@ import { z } from 'zod'
 
 const reactionValidationSchema = z.object({
   body: z.object({
-    newsId: z.string().min(1, 'News ID is required'),
+    postId: z.string().min(1, 'Post ID is required'),
     userId: z.string().min(1, 'User ID is required'),
-    reaction: z.enum(['like', 'love', 'care', 'funny', 'wow', 'sad', 'angry']),
+    type: z.enum(['LIKE', 'LOVE', 'CARE', 'FUNNY', 'WOW', 'SAD', 'ANGRY']),
   }),
 })
 const updateReactionValidationSchema = z.object({
   body: z.object({
-    newsId: z.string().min(1, 'News ID is required'),
+    postId: z.string().min(1, 'Post ID is required'),
     userId: z.string().min(1, 'User ID is required'),
-    reaction: z.enum(['like', 'love', 'care', 'funny', 'wow', 'sad', 'angry']).optional(),
+    type: z.enum(['LIKE', 'LOVE', 'CARE', 'FUNNY', 'WOW', 'SAD', 'ANGRY']).optional(),
   }),
 })
 
-export const reactValidation = {
+export const reactionValidation = {
   reactionValidationSchema,
   updateReactionValidationSchema
 }
